@@ -42,7 +42,7 @@ class _WebViewExampleState extends State<WebViewExample> {
                 Uri uri = Uri.parse(request.url);
 
                 // Allow internal domain to load in WebView
-                if (uri.host.contains('adkweb.imvickykumar999.dpdns.org')) {
+                if (uri.host.contains('24x7live.imvickykumar999.dpdns.org')) {
                   return NavigationDecision.navigate;
                 }
 
@@ -69,7 +69,9 @@ class _WebViewExampleState extends State<WebViewExample> {
               },
             ),
           )
-          ..loadRequest(Uri.parse("https://adkweb.imvickykumar999.dpdns.org/"));
+          ..loadRequest(
+            Uri.parse("https://24x7live.imvickykumar999.dpdns.org/"),
+          );
   }
 
   // 🔗 External URL handler
