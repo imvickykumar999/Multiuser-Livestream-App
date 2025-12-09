@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 
 void main() => runApp(const MyApp());
 
@@ -72,6 +74,69 @@ class _WebViewExampleState extends State<WebViewExample> {
           ..loadRequest(
             Uri.parse("https://24x7live.imvickykumar999.dpdns.org/"),
           );
+
+    // Setup file upload support for Android
+    _setupFileUpload();
+  }
+
+  // 📁 Setup file upload support
+  void _setupFileUpload() {
+    if (Platform.isAndroid) {
+      final androidController =
+          _controller.platform as AndroidWebViewController;
+      androidController.setOnShowFileSelector(_androidFilePicker);
+    }
+  }
+
+  // 📁 Android file picker handler
+  Future<List<String>> _androidFilePicker(FileSelectorParams params) async {
+    try {
+      // Use method channel to get content URIs directly from native file picker
+      const platform = MethodChannel('com.example.webview_app/file_picker');
+
+      // Determine MIME type from accept types
+      String? mimeType;
+      if (params.acceptTypes.isNotEmpty) {
+        final acceptTypes = params.acceptTypes;
+        if (acceptTypes.any(
+          (type) =>
+              type.contains('image') ||
+              type == 'image/*' ||
+              type.startsWith('image/'),
+        )) {
+          mimeType = 'image/*';
+        } else if (acceptTypes.any(
+          (type) =>
+              type.contains('video') ||
+              type == 'video/*' ||
+              type.startsWith('video/'),
+        )) {
+          mimeType = 'video/*';
+        } else if (acceptTypes.any(
+          (type) =>
+              type.contains('audio') ||
+              type == 'audio/*' ||
+              type.startsWith('audio/'),
+        )) {
+          mimeType = 'audio/*';
+        } else {
+          mimeType = '*/*';
+        }
+      } else {
+        mimeType = '*/*';
+      }
+
+      final List<dynamic>? result = await platform.invokeMethod('pickFile', {
+        'mimeType': mimeType,
+      });
+
+      if (result != null && result.isNotEmpty) {
+        return result.cast<String>();
+      }
+    } catch (e) {
+      debugPrint("File picker error: $e");
+    }
+    return [];
   }
 
   // 🔗 External URL handler
