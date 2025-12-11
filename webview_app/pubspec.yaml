@@ -34,6 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   url_launcher: ^6.2.4   # (or latest)
   file_picker: ^8.1.4
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
