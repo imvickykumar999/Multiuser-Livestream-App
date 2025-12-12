@@ -1,4 +1,4 @@
-package com.example.webview_app
+package com.imvickykumar999.x24live
 
 import android.app.Activity
 import android.content.Intent
@@ -8,7 +8,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.example.webview_app/file_picker"
+    private val CHANNEL = "com.imvickykumar999.x24live/file_picker"
     private val REQUEST_CODE_FILE_PICKER = 1
     private var filePickerResult: MethodChannel.Result? = null
 

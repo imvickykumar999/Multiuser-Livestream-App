@@ -92,7 +92,7 @@ class _WebViewExampleState extends State<WebViewExample> {
   Future<List<String>> _androidFilePicker(FileSelectorParams params) async {
     try {
       // Use method channel to get content URIs directly from native file picker
-      const platform = MethodChannel('com.example.webview_app/file_picker');
+      const platform = MethodChannel('com.imvickykumar999.x24live/file_picker');
 
       // Determine MIME type from accept types
       String? mimeType;

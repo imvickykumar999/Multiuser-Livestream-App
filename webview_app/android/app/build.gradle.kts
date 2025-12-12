@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.webview_app"
+    namespace = "com.imvickykumar999.x24live"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -35,7 +35,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.webview_app"
+        applicationId = "com.imvickykumar999.x24live"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
