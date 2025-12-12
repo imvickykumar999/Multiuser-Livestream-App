@@ -2,10 +2,16 @@ import java.util.Properties
 import java.io.FileInputStream
 
 // Load keystore properties from key.properties
-val keyPropertiesFile = rootProject.file("key.properties")
+// key.properties is in the Flutter project root (parent of android directory)
+val keyPropertiesFile = rootProject.file("../key.properties")
 val keyProperties = Properties()
+var keystorePropertiesLoaded = false
 if (keyPropertiesFile.exists()) {
     keyProperties.load(FileInputStream(keyPropertiesFile))
+    keystorePropertiesLoaded = true
+    println("INFO: Loaded key.properties from ${keyPropertiesFile.absolutePath}")
+} else {
+    println("WARNING: key.properties not found at ${keyPropertiesFile.absolutePath}")
 }
 
 plugins {
@@ -40,11 +46,32 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keyProperties["keyAlias"]?.toString() ?: ""
-            keyPassword = keyProperties["keyPassword"]?.toString() ?: ""
-            storeFile = keyProperties["storeFile"]?.toString()?.let { file(it) }
-            storePassword = keyProperties["storePassword"]?.toString() ?: ""
+        if (keystorePropertiesLoaded) {
+            val storeFilePath = keyProperties["storeFile"]?.toString()
+            val keyAliasValue = keyProperties["keyAlias"]?.toString()
+            val keyPasswordValue = keyProperties["keyPassword"]?.toString()
+            val storePasswordValue = keyProperties["storePassword"]?.toString()
+            
+            if (!storeFilePath.isNullOrEmpty() && !keyAliasValue.isNullOrEmpty() && 
+                !keyPasswordValue.isNullOrEmpty() && !storePasswordValue.isNullOrEmpty()) {
+                // storeFilePath is relative to Flutter project root, so use parent directory
+                val keystoreFile = rootProject.file("../$storeFilePath")
+                if (keystoreFile.exists()) {
+                    create("release") {
+                        keyAlias = keyAliasValue!!
+                        keyPassword = keyPasswordValue!!
+                        storeFile = keystoreFile
+                        storePassword = storePasswordValue!!
+                    }
+                    println("INFO: Release signing config created successfully")
+                } else {
+                    println("WARNING: Keystore file not found: ${keystoreFile.absolutePath}")
+                }
+            } else {
+                println("WARNING: Some keystore properties are missing or empty")
+            }
+        } else {
+            println("WARNING: key.properties file not found")
         }
     }
 
@@ -56,7 +83,13 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             isShrinkResources = false
-            signingConfig = signingConfigs.getByName("release")
+            val releaseSigningConfig = signingConfigs.findByName("release")
+            if (releaseSigningConfig != null) {
+                signingConfig = releaseSigningConfig
+                println("INFO: Release signing config applied")
+            } else {
+                println("WARNING: Release signing config not found - bundle will be unsigned!")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
